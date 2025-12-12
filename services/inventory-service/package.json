@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json.schemastore.org/package.json",
+  "name": "inventory-service",
+  "version": "1.0.0",
+  "description": "Microservice for managing inventory levels",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "author": "",
+  "license": "ISC"
+}

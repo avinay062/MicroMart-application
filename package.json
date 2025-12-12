@@ -1,0 +1,26 @@
+{
+  "name": "micromart-application",
+  "version": "1.0.0",
+  "description": "This project is a microservices architecture built using Express.js and MongoDB. It consists of four main services: Product Service, Order Service, Inventory Service, and User Service. Each service is responsible for a specific domain and communicates with each other to provide a complete solution.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:user-service": "node services/user-service/src/app.js",
+    "start:product-service": "node services/product-service/src/app.js",
+    "start:order-service": "node services/order-service/src/app.js",
+    "start:inventory-service": "node services/inventory-service/src/app.js",
+    "start:all": "npm run start:user-service & npm run start:product-service & npm run start:order-service & npm run start:inventory-service"
+  },
+  "workspaces": [
+    "services/*",
+    "shared-utils",
+    "client"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "9.0.0"
+  }
+}

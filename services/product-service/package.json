@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "product-service",
+  "version": "1.0.0",
+  "description": "Microservice for managing product catalog",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "shared-utils": "1.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "validator": "^13.15.23"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "author": "",
+  "license": "ISC"
+}
