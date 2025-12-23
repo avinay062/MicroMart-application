@@ -1,12 +1,12 @@
-const express = require('express');
-const ProductController = require('../controllers/productController');
-const { authenticateUser } = require('shared-utils');
+import express from 'express';
+import ProductController from '../controllers/productController.js';
+import { authenticateUser } from 'shared-utils';
 
 const setProductRoutes = (app) => {
     const router = express.Router();
     const productController = new ProductController();
 
-    router.post('/create',authenticateUser, productController.createProduct);
+    router.post('/create', authenticateUser, productController.createProduct);
     router.get('/getAllProducts', authenticateUser, productController.getAllProducts);
     router.get('/getProduct/:id', productController.getProduct);
     router.put('/update/:id', productController.updateProduct);
@@ -15,4 +15,4 @@ const setProductRoutes = (app) => {
     app.use('/api/products', router);
 };
 
-module.exports = {setProductRoutes};
+export { setProductRoutes };

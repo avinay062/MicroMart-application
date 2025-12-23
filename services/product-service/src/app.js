@@ -1,11 +1,11 @@
-const express = require('express');
-const { connectDB } = require('./utils/db');
-const {setProductRoutes} = require('./routes/productRoutes');
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
+import express from 'express';
+import { connectDB } from './utils/db.js';
+import { setProductRoutes } from './routes/productRoutes.js';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 30011;
 
 connectDB();
 

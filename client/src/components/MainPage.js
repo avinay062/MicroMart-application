@@ -12,7 +12,7 @@ const MainPage = () => {
 
     const fetchProducts = async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/products/getAllProducts', {
+            const res = await fetch('http://localhost:30011/api/products/getAllProducts', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -36,7 +36,7 @@ const MainPage = () => {
     const handleCreateProduct = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:3000/api/products/create', {
+            const res = await fetch('http://localhost:30011/api/products/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
