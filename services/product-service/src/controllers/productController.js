@@ -7,7 +7,17 @@ class ProductController {
             if (!name || !price || !description) {
                 return res.status(400).json({ message: 'All fields are required.' });
             }
-            const product = new Product({ name, price, description });
+            if (!req.file) {
+                return res.status(400).json({ message: 'Product image is required.' });
+            }
+
+            const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+            const product = new Product({
+                name,
+                price: Number(price),
+                description,
+                image: imageUrl
+            });
             await product.save();
 
             res.status(201).json({
