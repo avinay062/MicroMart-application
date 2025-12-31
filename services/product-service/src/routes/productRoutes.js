@@ -11,7 +11,7 @@ const setProductRoutes = (app) => {
     router.post('/create', authenticateUser, upload.single('image'), productController.createProduct);
     router.get('/getAllProducts', authenticateUser, productController.getAllProducts);
     router.get('/getProduct/:id', productController.getProduct);
-    router.put('/update/:id', productController.updateProduct);
+    router.put('/update/:id',authenticateUser, upload.single('image'), productController.updateProduct);
     router.delete('/delete/:id', productController.deleteProduct);
 
     app.use('/api/products', router);

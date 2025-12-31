@@ -145,7 +145,7 @@ const MainPage = () => {
                             >
                                 {product.image && (
                                     <img
-                                        src={product.image}
+                                        src={`data:image/jpeg;base64,${product.image}`}
                                         alt={product.name}
                                         className="w-full h-48 object-cover rounded mb-4"
                                     />
