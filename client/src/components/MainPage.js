@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const MainPage = () => {
     const [products, setProducts] = useState([]);
@@ -9,10 +10,12 @@ const MainPage = () => {
         price: '',
         description: '',
     });
+    const [image, setImage] = useState(null);
+    const [message, setMessage] = useState('');
 
     const fetchProducts = async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/products/getAllProducts', {
+            const res = await fetch('http://localhost:30011/api/products/getAllProducts', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -33,18 +36,31 @@ const MainPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleFileChange = (e) => {
+        setImage(e.target.files[0]);
+    };
+
     const handleCreateProduct = async (e) => {
         e.preventDefault();
+
+        const data = new FormData();
+        data.append('name', formData.name);
+        data.append('price', formData.price);
+        data.append('description', formData.description);
+        if (image) {
+            data.append('image', image);
+        }
+
         try {
-            const res = await fetch('http://localhost:3000/api/products/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(formData),
+            const response = await axios.post('http://localhost:30011/api/products/create', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
             });
-            const data = await res.json();
-            setResponse(data);
-            if (res.ok) {
+            setMessage(response.data.message);
+            setResponse(response.data);
+            if (response.status === 200) {
                 setFormData({ name: '', price: '', description: '' }); // Reset form
                 setShowCreateForm(false); // Switch back to product listing
                 fetchProducts(); // Fetch the updated product list
@@ -52,6 +68,7 @@ const MainPage = () => {
         } catch (err) {
             console.error('Create Product error:', err);
             setResponse({ error: err.message });
+            setMessage('Failed to create product');
         }
     };
 
@@ -106,6 +123,12 @@ const MainPage = () => {
                             required
                             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                        <input
+                            type="file"
+                            name="image"
+                            onChange={handleFileChange}
+                            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                         <button
                             type="submit"
                             className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
@@ -120,6 +143,13 @@ const MainPage = () => {
                                 key={index}
                                 className="border border-gray-300 rounded-lg p-4 shadow hover:shadow-lg transition"
                             >
+                                {product.image && (
+                                    <img
+                                        src={`data:image/jpeg;base64,${product.image}`}
+                                        alt={product.name}
+                                        className="w-full h-48 object-cover rounded mb-4"
+                                    />
+                                )}
                                 <h3 className="text-lg font-bold mb-2">{product.name}</h3>
                                 <p className="text-gray-700">Price: ${product.price}</p>
                                 <p className="text-gray-600">{product.description}</p>
@@ -127,6 +157,7 @@ const MainPage = () => {
                         ))}
                     </div>
                 )}
+                {message && <p className="mt-4 text-center text-green-600">{message}</p>}
                 <pre className="mt-6 text-sm text-gray-600 bg-gray-100 p-4 rounded">
                     {response ? JSON.stringify(response, null, 2) : ''}
                 </pre>

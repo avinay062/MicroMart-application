@@ -15,11 +15,13 @@
     "shared-utils": "1.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "validator": "^13.15.23"
+    "validator": "^13.15.23",
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "type": "module"
 }
