@@ -4,6 +4,7 @@ import { setProductRoutes } from './routes/productRoutes.js';
 import { setCartRoutes } from './routes/cartRoutes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import session from 'express-session';
 
 const app = express();
 const PORT = process.env.PORT || 30011;
@@ -18,9 +19,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); 
 
+app.use(
+    session({
+        secret: 'your-secret-key',
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: false } // Set to true if using HTTPS
+    })
+);
+
+app.get('/', (req, res) => {
+    req.session.isAuthenticated = true;
+    console.log('Session:', req.session);
+    res.send('Welcome to the Product Service!');
+});
+
+
+
+
 setProductRoutes(app);
 setCartRoutes(app);
-
 
 // const uploadsDir = process.env.UPLOADS_DIR || path.join(process.cwd(), 'uploads');
 
