@@ -111,3 +111,4 @@ The goal of this eKart application is to provide a scalable and modular e-commer
 - The User Service authenticates users and issues tokens for secure communication between services.
 
 # secret client?
+

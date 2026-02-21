@@ -11,9 +11,9 @@ const Signup = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    firstName: 'Shivani',
-                    lastName: 'Singh',
-                    emailId: 'shivani.singh@gmail.com',
+                    firstName: 'Avinay',
+                    lastName: 'kumar',
+                    emailId: 'avinay.kumar@gmail.com',
                     password: 'PassNew@0510',
                 }),
             });

@@ -2,17 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client'; 
 import './index.css';
 import App from './App';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>
+  </Provider>
 );
 
 
 /** 
  * ReactDOM.render: This function renders the App component into the DOM element with the ID root (defined in public/index.html).
-StrictMode: Helps identify potential problems in the app by enabling additional checks and warnings during development.
-
-*/
+ * Provider: Makes the Redux store available to the rest of the app, allowing components to access the state and dispatch actions.
+ */

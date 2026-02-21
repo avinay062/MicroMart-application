@@ -1,10 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AuthForm from './components/AuthForm';
-import MainPage from './components/MainPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { UserProvider } from './context/UserContext'; 
+import { Suspense } from 'react';
+
+
+const AuthForm = React.lazy(() => import('./components/AuthForm'));
+const MainPage = React.lazy(() => import('./components/MainPage'));
 
 const App = () => {
     return (
@@ -12,12 +15,12 @@ const App = () => {
             <Router>
                 <div className="flex flex-col min-h-screen">
                     <Header />
-                    <main className="flex-grow">
+                    <Suspense fallback={<div className="text-center mt-10">Loading...</div>}>
                         <Routes>
                             <Route path="/" element={<AuthForm />} />
                             <Route path="/main" element={<MainPage />} />
                         </Routes>
-                    </main>
+                    </Suspense>
                     <Footer />
                 </div>
             </Router>
