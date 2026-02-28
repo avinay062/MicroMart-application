@@ -115,8 +115,10 @@ class CartService {
         };
 
         // Send orderData to order-service
-        const orderServiceUrl = process.env.ORDER_SERVICE_URL || 'http://localhost:30012';
-        const response = await axios.post(`${orderServiceUrl}/api/orders/create`, orderData);
+        // ORDER_SERVICE_URL should point to the base URL of the order service
+        // (e.g. http://localhost:3001). The order service exposes POST /orders.
+        const orderServiceUrl = process.env.ORDER_SERVICE_URL || 'http://localhost:3001';
+        const response = await axios.post(`${orderServiceUrl}/orders`, orderData);
 
         // Clear cart after successful order creation
         await Cart.findOneAndUpdate({ userId }, { items: [], totalAmount: 0 });
@@ -125,4 +127,4 @@ class CartService {
     }
 }
 
-export default CartService;
+export default new CartService();

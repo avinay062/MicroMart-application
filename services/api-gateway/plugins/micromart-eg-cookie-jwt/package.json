@@ -1,0 +1,7 @@
+{
+  "name": "micromart-eg-cookie-jwt",
+  "version": "1.0.0",
+  "main": "manifest.js",
+  "private": true
+}
+

@@ -1,0 +1,216 @@
+http:
+  port: ${PORT:-8080}
+
+apiEndpoints:
+  users:
+    host: '*'
+    paths:
+      - /api/users/*
+  products:
+    host: '*'
+    paths:
+      - /api/products/*
+  cart:
+    host: '*'
+    paths:
+      - /api/cart/*
+  orders:
+    host: '*'
+    paths:
+      - /orders/*
+  inventory:
+    host: '*'
+    paths:
+      - /inventory/*
+
+serviceEndpoints:
+  userService:
+    url: ${USER_SERVICE_URL:-http://localhost:3004}
+  productService:
+    url: ${PRODUCT_SERVICE_URL:-http://localhost:30011}
+  orderService:
+    url: ${ORDER_SERVICE_URL:-http://localhost:3001}
+  inventoryService:
+    url: ${INVENTORY_SERVICE_URL:-http://localhost:3003}
+
+policies:
+  - cors
+  - micromart-cookie-jwt
+  - jwt
+  - proxy
+
+pipelines:
+  usersPipeline:
+    apiEndpoints:
+      - users
+    policies:
+      - cors:
+          - action:
+              origin: ${CLIENT_ORIGIN:-http://localhost:3000}
+              credentials: true
+      - micromart-cookie-jwt:
+          - condition:
+              name: allOf
+              conditions:
+                - name: not
+                  condition:
+                    name: method
+                    methods: OPTIONS
+                - name: not
+                  condition:
+                    name: oneOf
+                    conditions:
+                      - name: pathExact
+                        path: /api/users/signup
+                      - name: pathExact
+                        path: /api/users/signin
+                      - name: pathExact
+                        path: /api/users/auth/validate
+            action:
+              cookieName: token
+      - jwt:
+          - condition:
+              name: allOf
+              conditions:
+                - name: not
+                  condition:
+                    name: method
+                    methods: OPTIONS
+                - name: not
+                  condition:
+                    name: oneOf
+                    conditions:
+                      - name: pathExact
+                        path: /api/users/signup
+                      - name: pathExact
+                        path: /api/users/signin
+                      - name: pathExact
+                        path: /api/users/auth/validate
+            action:
+              secretOrPublicKey: ${JWT_SECRET}
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: userService
+              changeOrigin: true
+
+  productsPipeline:
+    apiEndpoints:
+      - products
+    policies:
+      - cors:
+          - action:
+              origin: ${CLIENT_ORIGIN:-http://localhost:3000}
+              credentials: true
+      - micromart-cookie-jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              cookieName: token
+      - jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              secretOrPublicKey: ${JWT_SECRET}
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: productService
+              changeOrigin: true
+
+  cartPipeline:
+    apiEndpoints:
+      - cart
+    policies:
+      - cors:
+          - action:
+              origin: ${CLIENT_ORIGIN:-http://localhost:3000}
+              credentials: true
+      - micromart-cookie-jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              cookieName: token
+      - jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              secretOrPublicKey: ${JWT_SECRET}
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: productService
+              changeOrigin: true
+
+  ordersPipeline:
+    apiEndpoints:
+      - orders
+    policies:
+      - cors:
+          - action:
+              origin: ${CLIENT_ORIGIN:-http://localhost:3000}
+              credentials: true
+      - micromart-cookie-jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              cookieName: token
+      - jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              secretOrPublicKey: ${JWT_SECRET}
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: orderService
+              changeOrigin: true
+
+  inventoryPipeline:
+    apiEndpoints:
+      - inventory
+    policies:
+      - cors:
+          - action:
+              origin: ${CLIENT_ORIGIN:-http://localhost:3000}
+              credentials: true
+      - micromart-cookie-jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              cookieName: token
+      - jwt:
+          - condition:
+              name: not
+              condition:
+                name: method
+                methods: OPTIONS
+            action:
+              secretOrPublicKey: ${JWT_SECRET}
+              checkCredentialExistence: false
+      - proxy:
+          - action:
+              serviceEndpoint: inventoryService
+              changeOrigin: true
+

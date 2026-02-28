@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start:gateway": "node services/api-gateway/server.js",
     "start:user-service": "node services/user-service/src/app.js",
     "start:product-service": "node services/product-service/src/app.js",
     "start:order-service": "node services/order-service/src/app.js",
     "start:inventory-service": "node services/inventory-service/src/app.js",
-    "start:all": "npm run start:user-service & npm run start:product-service & npm run start:order-service & npm run start:inventory-service"
+    "start:all": "npm run start:gateway & npm run start:user-service & npm run start:product-service & npm run start:order-service & npm run start:inventory-service"
   },
   "workspaces": [
     "services/*",

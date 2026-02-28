@@ -1,6 +1,19 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Compute __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Prefer environment/.env and environment/.env.local (if you use that folder)
+dotenv.config({ path: path.join(__dirname, '../../environment/.env') });
+dotenv.config({ path: path.join(__dirname, '../../environment/.env.local'), override: true });
+// Also support service-root .env/.env.local
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../.env.local'), override: true });
+// Fallback to process.cwd() .env if present
 dotenv.config();
 
 const connectDB = async () => {

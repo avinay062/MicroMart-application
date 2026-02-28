@@ -1,0 +1,11 @@
+# Core DB (in-memory emulation for development)
+db:
+  redis:
+    emulate: true
+    namespace: EG
+
+# Plugins (custom policy for cookie->Authorization header)
+plugins:
+  micromart-eg-cookie-jwt:
+    package: 'micromart-eg-cookie-jwt'
+

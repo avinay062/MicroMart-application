@@ -1,7 +1,7 @@
 import express from 'express';
 import ProductController from '../controllers/productController.js';
-import { authenticateUser } from 'shared-utils';
 import upload from './../middleware/upload.middleware.js';
+import { authenticateUser } from 'shared-utils';
 
 
 const setProductRoutes = (app) => {
@@ -11,7 +11,7 @@ const setProductRoutes = (app) => {
     router.post('/create', authenticateUser, upload.single('image'), productController.createProduct.bind(productController));
     router.get('/getAllProducts', authenticateUser, productController.getAllProducts.bind(productController));
     router.get('/getProduct/:id', productController.getProduct.bind(productController));
-    router.put('/update/:id',authenticateUser, upload.single('image'), productController.updateProduct.bind(productController));
+    router.put('/update/:id', authenticateUser, upload.single('image'), productController.updateProduct.bind(productController));
     router.delete('/delete/:id', productController.deleteProduct.bind(productController));
     router.get('/products-by-category', productController.getProductsByCategory.bind(productController));
     router.get('/products-by-price-range', productController.getProductsByPriceRange.bind(productController));

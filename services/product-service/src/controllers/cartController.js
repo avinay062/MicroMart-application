@@ -47,7 +47,7 @@ class CartController {
 
     async removeFromCart(req, res) {
         try {
-            const { productId } = req.body;
+            const productId = req.params.productId;
             const userId = req.user.id;
 
             // Delegate to service layer

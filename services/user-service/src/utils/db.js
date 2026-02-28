@@ -1,6 +1,15 @@
-require('dotenv').config();
-
+const path = require('path');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+
+// Prefer environment/.env and environment/.env.local (if you use that folder)
+dotenv.config({ path: path.join(__dirname, '../../environment/.env') });
+dotenv.config({ path: path.join(__dirname, '../../environment/.env.local'), override: true });
+// Also support service-root .env/.env.local (common on Windows)
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../../.env.local'), override: true });
+// Fallback to process.cwd() .env if present
+dotenv.config();
 
 const connectDB = async () => {
     try {
@@ -18,4 +27,4 @@ const connectDB = async () => {
     }
 };
 
-module.exports = {connectDB};
+module.exports = { connectDB };
