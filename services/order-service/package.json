@@ -5,6 +5,7 @@
   "description": "Microservice for handling orders in the e-commerce application.",
   "main": "src/app.js",
   "scripts": {
+    "test": "jest --runInBand",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },

@@ -4,7 +4,10 @@
   "description": "This project is a microservices architecture built using Express.js and MongoDB. It consists of four main services: Product Service, Order Service, Inventory Service, and User Service. Each service is responsible for a specific domain and communicates with each other to provide a complete solution.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:client": "jest --runInBand --selectProjects client",
+    "test:services": "jest --runInBand --selectProjects product-service order-service inventory-service user-service api-gateway shared-utils",
     "start:gateway": "node services/api-gateway/server.js",
     "start:user-service": "node services/user-service/src/app.js",
     "start:product-service": "node services/product-service/src/app.js",
@@ -22,6 +25,19 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "concurrently": "9.0.0"
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.1",
+    "babel-jest": "^29.7.0",
+    "concurrently": "9.0.0",
+    "cross-env": "^7.0.3",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "mongodb-memory-server": "^10.1.4",
+    "supertest": "^7.1.1"
   }
 }
