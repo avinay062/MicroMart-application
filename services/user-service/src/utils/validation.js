@@ -1,4 +1,5 @@
 const validator = require('validator');
+const { AppError } = require('shared-utils');
 
 const validateSignupData = (req) => {
 
@@ -11,21 +12,21 @@ const validateSignupData = (req) => {
 
     // Presence
     if (!req.body.firstName || !req.body.lastName) {
-        throw new Error('Name is not valid');
+        throw AppError.badRequest('Name is not valid');
     }
     if (!req.body.emailId || !validator.isEmail(req.body.emailId)) {
-        throw new Error('Given Email id is Invalid');
+        throw AppError.badRequest('Given Email id is Invalid');
     }
 
     if (!password || password.length < 8) {
-        throw new Error('Password must be at least 8 characters long');
+        throw AppError.badRequest('Password must be at least 8 characters long');
     }
 
     // (Optional) Strong password policy at request level:
     if (!validator.isStrongPassword(password, {
         minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1,
     })) {
-        throw new Error('Password is not strong enough');
+        throw AppError.badRequest('Password is not strong enough');
     }
 
 }

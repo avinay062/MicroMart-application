@@ -1,36 +1,37 @@
+const Inventory = require('../models/inventory');
+const { AppError } = require('shared-utils');
+
 class InventoryController {
-    constructor(InventoryModel) {
+    constructor(InventoryModel = Inventory) {
         this.InventoryModel = InventoryModel;
     }
 
     async updateStock(req, res) {
         const { productId, quantity } = req.body;
-        try {
-            const inventory = await this.InventoryModel.findOneAndUpdate(
-                { productId: productId },
-                { $inc: { stock: -quantity } },
-                { new: true }
-            );
-            if (!inventory) {
-                return res.status(404).json({ message: 'Product not found' });
-            }
-            res.status(200).json(inventory);
-        } catch (error) {
-            res.status(500).json({ message: 'Error updating stock', error });
+        if (!productId || typeof quantity !== 'number') {
+            throw AppError.badRequest('productId and numeric quantity are required');
         }
+
+        const inventory = await this.InventoryModel.findOneAndUpdate(
+            { productId },
+            { $inc: { stockLevel: -quantity } },
+            { new: true }
+        );
+
+        if (!inventory) {
+            throw AppError.notFound('Product not found in inventory', { productId });
+        }
+
+        return res.status(200).json({ message: 'Stock updated successfully', data: inventory });
     }
 
     async getStock(req, res) {
         const { productId } = req.params;
-        try {
-            const inventory = await this.InventoryModel.findOne({ productId: productId });
-            if (!inventory) {
-                return res.status(404).json({ message: 'Product not found' });
-            }
-            res.status(200).json(inventory);
-        } catch (error) {
-            res.status(500).json({ message: 'Error fetching stock', error });
+        const inventory = await this.InventoryModel.findOne({ productId });
+        if (!inventory) {
+            throw AppError.notFound('Product not found in inventory', { productId });
         }
+        return res.status(200).json({ message: 'Stock retrieved successfully', data: inventory });
     }
 }
 

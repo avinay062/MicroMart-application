@@ -1,23 +1,24 @@
 import express from 'express';
 import ProductController from '../controllers/productController.js';
 import upload from './../middleware/upload.middleware.js';
-import { authenticateUser } from 'shared-utils';
+import { authenticateUser, catchAsync } from 'shared-utils';
 
 
 const setProductRoutes = (app) => {
     const router = express.Router();
-    const productController = new ProductController(); // Create a new instance of the class
+    const productController = new ProductController();
+    const wrap = (handler) => catchAsync(handler.bind(productController));
 
-    router.post('/create', authenticateUser, upload.single('image'), productController.createProduct.bind(productController));
-    router.get('/getAllProducts', authenticateUser, productController.getAllProducts.bind(productController));
-    router.get('/getProduct/:id', productController.getProduct.bind(productController));
-    router.put('/update/:id', authenticateUser, upload.single('image'), productController.updateProduct.bind(productController));
-    router.delete('/delete/:id', productController.deleteProduct.bind(productController));
-    router.get('/products-by-category', productController.getProductsByCategory.bind(productController));
-    router.get('/products-by-price-range', productController.getProductsByPriceRange.bind(productController));
-    router.get('/count-by-price-range', productController.countProductsByPriceRange.bind(productController));
-    router.get('/paginated', productController.getPaginatedProducts.bind(productController));
-    router.post('/search-product', productController.searchProducts.bind(productController)); 
+    router.post('/create', authenticateUser, upload.single('image'), wrap(productController.createProduct));
+    router.get('/getAllProducts', authenticateUser, wrap(productController.getAllProducts));
+    router.get('/getProduct/:id', wrap(productController.getProduct));
+    router.put('/update/:id', authenticateUser, upload.single('image'), wrap(productController.updateProduct));
+    router.delete('/delete/:id', wrap(productController.deleteProduct));
+    router.get('/products-by-category', wrap(productController.getProductsByCategory));
+    router.get('/products-by-price-range', wrap(productController.getProductsByPriceRange));
+    router.get('/count-by-price-range', wrap(productController.countProductsByPriceRange));
+    router.get('/paginated', wrap(productController.getPaginatedProducts));
+    router.post('/search-product', wrap(productController.searchProducts)); 
 
     app.use('/api/products', router);
 };

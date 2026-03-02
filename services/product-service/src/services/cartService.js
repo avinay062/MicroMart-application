@@ -1,14 +1,16 @@
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import axios from "axios";
+import { AppError } from 'shared-utils';
 
 class CartService {
     async addToCart(userId, productId, quantity = 1) {
+        if (quantity < 1) {
+            throw AppError.badRequest('Quantity must be at least 1');
+        }
         const product = await Product.findById(productId);
         if (!product) {
-            const error = new Error('Product not found');
-            error.status = 404;
-            throw error;
+            throw AppError.notFound('Product not found', { productId });
         }
 
         let cart = await Cart.findOne({ userId });
@@ -16,9 +18,9 @@ class CartService {
             cart = new Cart({ userId, items: [], totalAmount: 0 });
         }
 
-        const existingItem = cart.items.find(item => item.productId.toString() === productId);
+        const existingItem = cart.items.find((item) => item.productId.toString() === productId);
 
-        if (existingItem && quantity > 0) {
+        if (existingItem) {
             existingItem.quantity += quantity;
         } else {
             cart.items.push({ productId, quantity });
@@ -50,23 +52,17 @@ class CartService {
 
     async updateCartItem(userId, productId, quantity) {
         if (quantity < 1) {
-            const error = new Error('Quantity must be at least 1');
-            error.status = 400;
-            throw error;
+            throw AppError.badRequest('Quantity must be at least 1');
         }
 
         const cart = await Cart.findOne({ userId });
         if (!cart) {
-            const error = new Error('Cart not found');
-            error.status = 404;
-            throw error;
+            throw AppError.notFound('Cart not found', { userId });
         }
 
-        const item = cart.items.find(item => item.productId.toString() === productId);
+        const item = cart.items.find((entry) => entry.productId.toString() === productId);
         if (!item) {
-            const error = new Error('Product not found in cart');
-            error.status = 404;
-            throw error;
+            throw AppError.notFound('Product not found in cart', { productId });
         }
 
         item.quantity = quantity;
@@ -78,12 +74,15 @@ class CartService {
     async removeFromCart(userId, productId) {
         const cart = await Cart.findOne({ userId });
         if (!cart) {
-            const error = new Error('Cart not found');
-            error.status = 404;
-            throw error;
+            throw AppError.notFound('Cart not found', { userId });
         }
 
-        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+        const originalLength = cart.items.length;
+        cart.items = cart.items.filter((item) => item.productId.toString() !== productId);
+        if (cart.items.length === originalLength) {
+            throw AppError.notFound('Product not found in cart', { productId });
+        }
+
         cart.totalAmount = await this.calculateTotal(cart.items);
         await cart.save();
         return cart;
@@ -97,33 +96,28 @@ class CartService {
     async checkout(userId) {
         const cart = await Cart.findOne({ userId }).populate('items.productId');
         if (!cart || cart.items.length === 0) {
-            const error = new Error('Cart is empty');
-            error.status = 400;
-            throw error;
+            throw AppError.badRequest('Cart is empty');
         }
 
-        // Prepare order data
         const orderData = {
             userId,
-            items: cart.items.map(item => ({
+            items: cart.items.map((item) => ({
                 productId: item.productId._id,
                 productName: item.productId.name,
                 quantity: item.quantity,
-                price: item.productId.price,
+                price: item.productId.price
             })),
-            totalAmount: cart.totalAmount,
+            totalAmount: cart.totalAmount
         };
 
-        // Send orderData to order-service
-        // ORDER_SERVICE_URL should point to the base URL of the order service
-        // (e.g. http://localhost:3001). The order service exposes POST /orders.
         const orderServiceUrl = process.env.ORDER_SERVICE_URL || 'http://localhost:3001';
-        const response = await axios.post(`${orderServiceUrl}/orders`, orderData);
-
-        // Clear cart after successful order creation
-        await Cart.findOneAndUpdate({ userId }, { items: [], totalAmount: 0 });
-
-        return { message: 'Checkout successful', order: response.data };
+        try {
+            const response = await axios.post(`${orderServiceUrl}/orders`, orderData);
+            await Cart.findOneAndUpdate({ userId }, { items: [], totalAmount: 0 });
+            return { message: 'Checkout successful', order: response.data };
+        } catch (error) {
+            throw AppError.internal('Order service unavailable', { reason: error.message }, 'ERR_ORDER_SERVICE_UNAVAILABLE');
+        }
     }
 }
 

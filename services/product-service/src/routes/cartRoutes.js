@@ -1,17 +1,18 @@
 import express from 'express';
 import CartController from '../controllers/cartController.js';
-import { authenticateUser } from 'shared-utils';
+import { authenticateUser, catchAsync } from 'shared-utils';
 
 const setCartRoutes = (app) => {
     const router = express.Router();
-    const cartController = new CartController(); // Create a new instance of the class
+    const cartController = new CartController();
+    const wrap = (handler) => catchAsync(handler.bind(cartController));
 
-    router.post('/add', authenticateUser, cartController.addToCart.bind(cartController));
-    router.get('/', authenticateUser, cartController.getCart.bind(cartController));
-    router.put('/update', authenticateUser, cartController.updateCartItem.bind(cartController));
-    router.delete('/remove/:productId', authenticateUser, cartController.removeFromCart.bind(cartController));
-    router.delete('/clear', authenticateUser, cartController.clearCart.bind(cartController));
-    router.post('/checkout', authenticateUser, cartController.checkout.bind(cartController));
+    router.post('/add', authenticateUser, wrap(cartController.addToCart));
+    router.get('/', authenticateUser, wrap(cartController.getCart));
+    router.put('/update', authenticateUser, wrap(cartController.updateCartItem));
+    router.delete('/remove/:productId', authenticateUser, wrap(cartController.removeFromCart));
+    router.delete('/clear', authenticateUser, wrap(cartController.clearCart));
+    router.post('/checkout', authenticateUser, wrap(cartController.checkout));
 
     app.use('/api/cart', router);
 }

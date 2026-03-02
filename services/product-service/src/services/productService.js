@@ -1,43 +1,44 @@
 import Product from '../models/Product.js';
+import { AppError } from 'shared-utils';
+
+const handleUnexpected = (error, message) => {
+    if (error instanceof AppError) {
+        throw error;
+    }
+    throw AppError.internal(message, { reason: error.message });
+};
 
 class ProductService {
-    async createProduct({data}){
+    async createProduct({ data }) {
+        const { name, price, description, file } = data;
+        if (!name || !price || !description) {
+            throw AppError.badRequest('All fields are required.');
+        }
+        if (!file) {
+            throw AppError.badRequest('Product image is required.');
+        }
+
         try {
-            const { name, price, description, file } = data;
-            if (!name || !price || !description) {
-                const error = new Error('All fields are required.');
-                error.status = 400;
-                throw error;
-            }
-            if (!file) {
-                const error = new Error('Product image is required.');
-                error.status = 400;
-                throw error;
-            }
             const imageBase64 = file.buffer.toString('base64');
             const product = new Product({
                 name,
                 price: Number(price),
                 description,
-                image: imageBase64,
+                image: imageBase64
             });
 
             await product.save();
             return product;
         } catch (error) {
-            console.error('Error in createProduct:', error);
-            error.status = error.status || 500; // Default to 500 if no status is set
-            throw error;
+            handleUnexpected(error, 'Failed to create product');
         }
     }
 
     async getAllProducts() {
         try {
-            const products = await Product.find();
-            return products;
+            return await Product.find();
         } catch (error) {
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to fetch products');
         }
     }
 
@@ -45,55 +46,42 @@ class ProductService {
         try {
             const product = await Product.findById(productId);
             if (!product) {
-                const error = new Error('Product not found');
-                error.status = 404;
-                throw error;
+                throw AppError.notFound('Product not found', { productId });
             }
             return product;
         } catch (error) {
-            console.error('Error fetching product by ID:', error);
-            error.status = error.status || 500;
-            throw error;
+            handleUnexpected(error, 'Failed to fetch product');
         }
     }
 
     async updateProduct(productId, data) {
+        const { name, price, description, file } = data;
+        if (!name && !price && !description && !file) {
+            throw AppError.badRequest('At least one field is required to update the product.');
+        }
+        if (price && Number(price) <= 0) {
+            throw AppError.badRequest('Price must be a positive number.');
+        }
         try {
-            const { name, price, description, file } = data;
-            if (!name && !price && !description && !file) {
-                const error = new Error('At least one field is required to update the product.');
-                error.status = 400;
-                throw error;
-            }
-            if (price && price <= 0) {
-                const error = new Error('Price must be a positive number.');
-                error.status = 400;
-                throw error;
-            }
             const imageBase64 = file ? file.buffer.toString('base64') : undefined;
-            // Update the product
             const updatedProduct = await Product.findByIdAndUpdate(
                 productId,
                 {
                     ...(name && { name }),
                     ...(price && { price: Number(price) }),
                     ...(description && { description }),
-                    ...(imageBase64 && { image: imageBase64 }),
+                    ...(imageBase64 && { image: imageBase64 })
                 },
-                { new: true } // Return the updated document
+                { new: true }
             );
 
             if (!updatedProduct) {
-                const error = new Error('Product not found');
-                error.status = 404;
-                throw error;
+                throw AppError.notFound('Product not found', { productId });
             }
 
             return updatedProduct;
         } catch (error) {
-            console.error('Error updating product:', error);
-            error.status = error.status || 500; // Default to 500 if no status is set
-            throw error;
+            handleUnexpected(error, 'Failed to update product');
         }
     }
 
@@ -101,111 +89,99 @@ class ProductService {
         try {
             const product = await Product.findByIdAndDelete(productId);
             if (!product) {
-                const error = new Error('Product not found');
-                error.status = 404;
-                throw error;
+                throw AppError.notFound('Product not found', { productId });
             }
             return product;
         } catch (error) {
-            console.error('Error deleting product:', error);
-            error.status = error.status || 500;
-            throw error;
+            handleUnexpected(error, 'Failed to delete product');
         }
     }
 
     async getProductsByCategory() {
         try {
-            const productsByCategory = await Product.aggregate([
+            return await Product.aggregate([
                 {
                     $group: {
                         _id: '$category',
                         averagePrice: { $avg: '$price' },
                         totalProducts: { $sum: 1 },
-                        products: { $push: '$$ROOT' },
-                    },
+                        products: { $push: '$$ROOT' }
+                    }
                 },
                 {
-                    $sort: { averagePrice: -1 },
-                },
+                    $sort: { averagePrice: -1 }
+                }
             ]);
-            return productsByCategory;
         } catch (error) {
-            console.error('Error fetching products by category:', error);
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to fetch products by category');
         }
     }
 
     async getProductsByPriceRange(minPrice, maxPrice) {
+        if (minPrice === undefined || maxPrice === undefined) {
+            throw AppError.badRequest('Both minPrice and maxPrice are required.');
+        }
         try {
-            const products = await Product.aggregate([
+            return await Product.aggregate([
                 {
                     $match: {
-                        price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
-                    },
+                        price: { $gte: Number(minPrice), $lte: Number(maxPrice) }
+                    }
                 },
                 {
-                    $sort: { price: 1 },
-                },
+                    $sort: { price: 1 }
+                }
             ]);
-            return products;
         } catch (error) {
-            console.error('Error fetching products by price range:', error);
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to fetch products by price range');
         }
     }
 
     async countProductsByPriceRange(minPrice, maxPrice) {
+        if (minPrice === undefined || maxPrice === undefined) {
+            throw AppError.badRequest('Both minPrice and maxPrice are required.');
+        }
         try {
-            const count = await Product.aggregate([
+            return await Product.aggregate([
                 {
                     $match: {
-                        price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
-                    },
+                        price: { $gte: Number(minPrice), $lte: Number(maxPrice) }
+                    }
                 },
                 {
-                    $count: 'totalProducts',
-                },
+                    $count: 'totalProducts'
+                }
             ]);
-            return count;
         } catch (error) {
-            console.error('Error counting products by price range:', error);
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to count products by price range');
         }
     }
 
-    async getPaginatedProducts(page, limit) {
+    async getPaginatedProducts(page = 1, limit = 10) {
+        const parsedPage = Number(page);
+        const parsedLimit = Number(limit);
+        if (parsedPage < 1 || parsedLimit < 1) {
+            throw AppError.badRequest('Page and limit must be positive integers.');
+        }
         try {
-            const products = await Product.find()
-                .skip((page - 1) * limit)
-                .limit(Number(limit));
-            return products;
+            return await Product.find()
+                .skip((parsedPage - 1) * parsedLimit)
+                .limit(parsedLimit);
         } catch (error) {
-            console.error('Error fetching paginated products:', error);
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to fetch paginated products');
         }
     }
 
     async searchProducts(productName) {
+        if (!productName) {
+            throw AppError.badRequest('Product name is required for search.');
+        }
         try {
-            if (!productName) {
-                const error = new Error('Product name is required for search.');
-                error.status = 400;
-                throw error;
-            }
-
-            const products = await Product.find({
-                name: { $regex: productName, $options: 'i' }, // Case-insensitive search by product name
+            return await Product.find({
+                name: { $regex: productName, $options: 'i' }
             });
-
-            return products;
         } catch (error) {
-            console.error('Error searching products by name:', error);
-            error.status = 500;
-            throw error;
+            handleUnexpected(error, 'Failed to search products');
         }
     }
 }
