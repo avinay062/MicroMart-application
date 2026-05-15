@@ -99,24 +99,45 @@ class CartService {
             throw AppError.badRequest('Cart is empty');
         }
 
-        const orderData = {
-            userId,
-            items: cart.items.map((item) => ({
-                productId: item.productId._id,
-                productName: item.productId.name,
-                quantity: item.quantity,
-                price: item.productId.price
-            })),
-            totalAmount: cart.totalAmount
-        };
-
         const orderServiceUrl = process.env.ORDER_SERVICE_URL || 'http://localhost:3001';
         try {
-            const response = await axios.post(`${orderServiceUrl}/orders`, orderData);
+            // Order service currently accepts one product per order payload.
+            const createdOrders = await Promise.all(
+                cart.items.map((item) =>
+                    axios.post(`${orderServiceUrl}/orders`, {
+                        userId,
+                        productId: String(item.productId?._id || item.productId),
+                        quantity: Number(item.quantity)
+                    })
+                )
+            );
+
             await Cart.findOneAndUpdate({ userId }, { items: [], totalAmount: 0 });
-            return { message: 'Checkout successful', order: response.data };
+            return {
+                message: 'Checkout successful',
+                orders: createdOrders.map((response) => response.data),
+                totalAmount: cart.totalAmount
+            };
         } catch (error) {
-            throw AppError.internal('Order service unavailable', { reason: error.message }, 'ERR_ORDER_SERVICE_UNAVAILABLE');
+            const upstream = error?.response?.data;
+            const upstreamMessage = upstream?.message || error.message;
+            const upstreamStatus = error?.response?.status;
+            if (upstreamStatus >= 400 && upstreamStatus < 500) {
+                throw AppError.badRequest(
+                    `Checkout failed: ${upstreamMessage}`,
+                    { status: upstreamStatus, upstream },
+                    'ERR_CHECKOUT_BAD_REQUEST'
+                );
+            }
+            throw AppError.internal(
+                `Checkout failed: ${upstreamMessage}`,
+                {
+                    reason: error.message,
+                    status: upstreamStatus,
+                    upstream
+                },
+                'ERR_ORDER_SERVICE_UNAVAILABLE'
+            );
         }
     }
 }

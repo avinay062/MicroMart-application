@@ -10,9 +10,9 @@ const ProductCard = ({ product }) => {
   return (
     <Link
       to={`/products/${id}`}
-      className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden border border-slate-200"
+      className="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:shadow-slate-950/50"
     >
-      <div className="aspect-[4/3] bg-slate-100 overflow-hidden">
+      <div className="aspect-[4/3] bg-slate-100 overflow-hidden dark:bg-slate-700">
         <img
           src={imageSrc}
           alt={product.name}
@@ -20,10 +20,10 @@ const ProductCard = ({ product }) => {
         />
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-slate-800 truncate">{product.name}</h3>
-        <p className="text-amber-600 font-medium mt-1">${Number(product.price).toFixed(2)}</p>
+        <h3 className="font-semibold text-slate-800 truncate dark:text-slate-100">{product.name}</h3>
+        <p className="text-amber-600 font-medium mt-1 dark:text-amber-400">${Number(product.price).toFixed(2)}</p>
         {product.description && (
-          <p className="text-slate-600 text-sm mt-2 line-clamp-2">{product.description}</p>
+          <p className="text-slate-600 text-sm mt-2 line-clamp-2 dark:text-slate-300">{product.description}</p>
         )}
       </div>
     </Link>

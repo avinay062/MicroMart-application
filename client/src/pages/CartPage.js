@@ -90,21 +90,21 @@ const CartPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center text-slate-500">
+      <div className="min-h-[80vh] flex items-center justify-center text-slate-500 dark:text-slate-400">
         Loading cart...
       </div>
     );
   }
 
   return (
-    <div className="min-h-[80vh] bg-slate-50 py-8 px-4">
+    <div className="min-h-[80vh] bg-slate-50 py-8 px-4 dark:bg-slate-900">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">Your cart</h1>
+        <h1 className="text-2xl font-bold text-slate-800 mb-6 dark:text-slate-100">Your cart</h1>
         {error && (
-          <p className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm">{error}</p>
+          <p className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm dark:bg-red-900/30 dark:text-red-300">{error}</p>
         )}
         {checkoutResult && (
-          <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-xl">
+          <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-xl dark:bg-green-900/30 dark:text-green-300">
             <p className="font-medium">Checkout successful.</p>
             <pre className="mt-2 text-sm overflow-auto max-h-40">
               {JSON.stringify(checkoutResult, null, 2)}
@@ -112,9 +112,9 @@ const CartPage = () => {
           </div>
         )}
         {isEmpty && !checkoutResult ? (
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center text-slate-600">
+          <div className="bg-white rounded-xl shadow-sm p-8 text-center text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             <p className="mb-4">Your cart is empty.</p>
-            <Link to="/products" className="text-amber-600 font-medium hover:underline">
+            <Link to="/products" className="text-amber-600 font-medium hover:underline dark:text-amber-400">
               Browse products
             </Link>
           </div>
@@ -144,7 +144,7 @@ const CartPage = () => {
                 type="button"
                 onClick={handleClear}
                 disabled={actionLoading || isEmpty}
-                className="border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 disabled:opacity-50"
+                className="border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 Clear cart
               </button>
@@ -167,39 +167,39 @@ function CartItem({ item, onUpdate, onRemove, disabled }) {
     : null;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap items-center gap-4">
+    <div className="bg-white rounded-xl shadow-sm p-4 flex flex-wrap items-center gap-4 dark:bg-slate-800 dark:shadow-slate-950/40">
       {imageSrc && (
         <img src={imageSrc} alt={name} className="w-20 h-20 object-cover rounded-lg" />
       )}
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-slate-800 truncate">{name}</p>
-        <p className="text-amber-600">${price.toFixed(2)} each</p>
+        <p className="font-medium text-slate-800 truncate dark:text-slate-100">{name}</p>
+        <p className="text-amber-600 dark:text-amber-400">${price.toFixed(2)} each</p>
       </div>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => onUpdate(productId, qty - 1)}
           disabled={disabled || qty <= 1}
-          className="w-8 h-8 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          className="w-8 h-8 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           −
         </button>
-        <span className="w-8 text-center font-medium">{qty}</span>
+        <span className="w-8 text-center font-medium dark:text-slate-100">{qty}</span>
         <button
           type="button"
           onClick={() => onUpdate(productId, qty + 1)}
           disabled={disabled}
-          className="w-8 h-8 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+          className="w-8 h-8 rounded border border-slate-300 text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
         >
           +
         </button>
       </div>
-      <p className="font-medium text-slate-800">${(price * qty).toFixed(2)}</p>
+      <p className="font-medium text-slate-800 dark:text-slate-100">${(price * qty).toFixed(2)}</p>
       <button
         type="button"
         onClick={() => onRemove(productId)}
         disabled={disabled}
-        className="text-red-600 text-sm hover:underline"
+        className="text-red-600 text-sm hover:underline dark:text-red-400"
       >
         Remove
       </button>

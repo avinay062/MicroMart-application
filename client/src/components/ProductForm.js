@@ -39,8 +39,8 @@ const ProductForm = ({ onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 max-w-lg">
-      <h2 className="text-lg font-semibold text-slate-800 mb-4">New product</h2>
+    <div className="bg-white rounded-xl shadow-sm p-6 max-w-lg dark:bg-slate-800 dark:shadow-slate-950/40">
+      <h2 className="text-lg font-semibold text-slate-800 mb-4 dark:text-slate-100">New product</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -49,7 +49,7 @@ const ProductForm = ({ onSuccess, onCancel }) => {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
         />
         <input
           type="number"
@@ -60,7 +60,7 @@ const ProductForm = ({ onSuccess, onCancel }) => {
           required
           min="0"
           step="0.01"
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
         />
         <textarea
           name="description"
@@ -69,15 +69,15 @@ const ProductForm = ({ onSuccess, onCancel }) => {
           onChange={handleChange}
           required
           rows={3}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
         />
         <input
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-50 file:text-amber-700"
+          className="w-full text-sm text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-900/30 dark:file:text-amber-300"
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-300">{error}</p>}
         <div className="flex gap-3">
           <button
             type="submit"
@@ -89,7 +89,7 @@ const ProductForm = ({ onSuccess, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50"
+            className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             Cancel
           </button>

@@ -35,10 +35,10 @@ const ProductsPage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] bg-slate-50 py-8 px-4">
+    <div className="min-h-[80vh] bg-slate-50 py-8 px-4 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-slate-800">Products</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Products</h1>
           <div className="flex gap-2">
             <button
               type="button"
@@ -46,7 +46,7 @@ const ProductsPage = () => {
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 !showCreateForm
                   ? 'bg-amber-600 text-white'
-                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600'
               }`}
             >
               List
@@ -57,7 +57,7 @@ const ProductsPage = () => {
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 showCreateForm
                   ? 'bg-amber-600 text-white'
-                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600'
               }`}
             >
               Create product
@@ -66,18 +66,18 @@ const ProductsPage = () => {
         </div>
 
         {message && (
-          <p className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm">{message}</p>
+          <p className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm dark:bg-green-900/30 dark:text-green-300">{message}</p>
         )}
         {error && (
-          <p className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm">{error}</p>
+          <p className="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm dark:bg-red-900/30 dark:text-red-300">{error}</p>
         )}
 
         {showCreateForm ? (
           <ProductForm onSuccess={handleCreated} onCancel={() => setShowCreateForm(false)} />
         ) : loading ? (
-          <div className="text-center py-12 text-slate-500">Loading products...</div>
+          <div className="text-center py-12 text-slate-500 dark:text-slate-400">Loading products...</div>
         ) : products.length === 0 ? (
-          <div className="text-center py-12 text-slate-500 bg-white rounded-xl shadow-sm">
+          <div className="text-center py-12 text-slate-500 bg-white rounded-xl shadow-sm dark:bg-slate-800 dark:text-slate-300">
             No products yet. Create one to get started.
           </div>
         ) : (
